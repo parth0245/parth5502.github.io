@@ -45,6 +45,7 @@
     letter-spacing: 0.01em;
     color: var(--black);
     text-decoration: none;
+    z-index: 101;
   }
   .nav-links { display: flex; gap: 2.5rem; align-items: center; }
   .nav-links a {
@@ -65,13 +66,64 @@
     transition: opacity 0.2s !important;
   }
   .nav-cta:hover { opacity: 0.75; color: var(--white) !important; }
+/* HAMBURGER */
+  .hamburger {
+    display: none;
+    flex-direction: column; justify-content: center; gap: 5px;
+    width: 36px; height: 36px;
+    cursor: pointer; z-index: 101; background: none; border: none; padding: 4px;
+  }
+  .hamburger span {
+    display: block; width: 100%; height: 1.5px;
+    background: var(--black);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: center;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* MOBILE MENU OVERLAY */
+  .mobile-menu {
+    display: none;
+    position: fixed; inset: 0; z-index: 99;
+    background: rgba(255,255,255,0.98);
+    backdrop-filter: blur(12px);
+    flex-direction: column; justify-content: center; align-items: center;
+    gap: 2.5rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .mobile-menu.open { opacity: 1; pointer-events: all; }
+  .mobile-menu a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .mobile-menu a:hover { color: var(--black); }
+  .mobile-menu .nav-cta {
+    margin-top: 1rem;
+    padding: 0.75rem 2rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .mobile-menu { display: flex; }
+  }
 
   /* HERO */
   .hero {
     min-height: 100vh;
     display: grid;
     grid-template-columns: 1fr 1px 1fr;
-    /* padding-top: 5rem; */
+    padding-top: 5rem;
   }
   .hero-left {
     padding: 5rem 5rem 5rem 5rem;
@@ -452,7 +504,7 @@
 <body>
 
 <!-- NAV -->
-<!-- <nav>
+<nav>
   <a href="#" class="nav-logo">Parth Pandey</a>
   <div class="nav-links">
     <a href="#skills">Skills</a>
@@ -461,7 +513,19 @@
     <a href="#education">Education</a>
     <a href="mailto:parth5502@gmail.com" class="nav-cta">Hire Me</a>
   </div>
-</nav> -->
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#skills" class="mobile-link">Skills</a>
+  <a href="#experience" class="mobile-link">Experience</a>
+  <a href="#exploring" class="mobile-link">Exploring</a>
+  <a href="#education" class="mobile-link">Education</a>
+  <a href="mailto:parth5502@gmail.com" class="nav-cta">Hire Me</a>
+</div> 
 
 <!-- HERO -->
 <div class="hero">
@@ -729,6 +793,22 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08 });
   document.querySelectorAll('.fade-up, .exp-item').forEach(el => observer.observe(el));
+
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+    document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+  });
+  document.querySelectorAll('.mobile-link, .mobile-menu .nav-cta').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
 </script>
 </body>
 </html>
